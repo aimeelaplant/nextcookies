@@ -1,6 +1,5 @@
 const express = require('express');
 const next = require('next');
-const cookieParser = require('cookie-parser');
 
 const app = next({ dev: true });
 const handle = app.getRequestHandler();
@@ -9,18 +8,12 @@ app
   .prepare()
   .then(() => {
     const server = express();
-    server.use(cookieParser());
     server.use((req, res, next) => {
-      const cookies = req.cookies;
-      const p = new Promise((resolve, reject) => {
-        if (!cookies.session_id) {
-          resolve('abcde'); 
-        }
-      });
-
-      p.then((token) => res.cookie('sessionid', token));
-
       next();
+    });
+
+    server.get('/test', (req, res) => {
+      app.render(req, res, '/test', req.params);
     });
 
     server.get('/', (req, res) => {
